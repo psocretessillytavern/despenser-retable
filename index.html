@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="The Despenser Reredos at Norwich Cathedral — an interactive heritage presentation.">
+  <title>Norwich Cathedral — Despenser Reredos</title>
+  <style>
+    :root { color-scheme: light; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #f8f6f1; color: #2a2926; font-family: Georgia, 'Times New Roman', serif; }
+    main { max-width: 1260px; margin: 0 auto; padding: 34px 22px 60px; }
+    h1 { text-align: center; font-size: clamp(2.2rem, 5vw, 4rem); font-weight: normal; margin: 0 0 32px; letter-spacing: .01em; }
+    .painting-button { width: 100%; padding: 0; border: 0; display: block; position: relative; background: #231a11; cursor: pointer; box-shadow: 0 4px 22px #0002; }
+    .painting-button img { display: block; width: 100%; height: auto; }
+    .painting-button:focus-visible { outline: 4px solid #ad752b; outline-offset: 5px; }
+    .play-hint { position: absolute; bottom: 14px; left: 50%; transform: translateX(-50%); padding: 9px 16px; border-radius: 4px; color: white; background: rgba(18, 18, 18, .78); font: 15px/1.3 system-ui, sans-serif; white-space: nowrap; pointer-events: none; }
+    .content { max-width: 850px; margin: 38px auto 0; text-align: center; }
+    h2 { font-weight: normal; font-size: clamp(1.55rem, 3vw, 2.2rem); margin: 0 0 30px; }
+    p { font-size: clamp(1.12rem, 2vw, 1.35rem); line-height: 1.7; margin: 0 0 28px; }
+    .credit { margin: 40px 0 0; font-size: .96rem; line-height: 1.5; color: #68635c; }
+    @media (max-width: 600px) { main { padding: 24px 12px 40px; } h1 { margin-bottom: 22px; } .content { margin-top: 30px; } .play-hint { bottom: 8px; font-size: 12px; padding: 7px 10px; } }
+  </style>
+</head>
+<body>
+  <main>
+    <h1>Norwich Cathedral</h1>
+    <button class="painting-button" id="painting" type="button" aria-label="Play narration by clicking the painting" aria-pressed="false">
+      <img src="retable.jpg" alt="The Despenser Reredos, a medieval painted altarpiece with scenes from the Passion of Christ" loading="eager">
+      <span class="play-hint" id="playHint">▶ Click the image to hear the narration</span>
+    </button>
+    <audio id="narration" src="narration.mp3" preload="metadata"></audio>
+    <section class="content" aria-label="About the Despenser Reredos">
+      <h2>One of the Cathedral's greatest treasures.</h2>
+      <p>Dating back to c.1380, the Despenser Reredos is one of the Cathedral’s greatest treasures and the only surviving medieval English altarpiece with scenes from Christ’s Passion. It is also known as the Despenser Retable.</p>
+      <p>It is said to have been saved from destruction over the centuries because it was hidden as the underside of a table until 1847!</p>
+      <p class="credit">An interactive interpretation for an educational heritage project. Painting and narration provided for this page.</p>
+    </section>
+  </main>
+  <script>
+    const painting = document.getElementById('painting');
+    const audio = document.getElementById('narration');
+    const hint = document.getElementById('playHint');
+    function updatePlayback() {
+      const playing = !audio.paused && !audio.ended;
+      hint.textContent = playing ? '❚❚ Click the image to pause' : '▶ Click the image to hear the narration';
+      painting.setAttribute('aria-pressed', String(playing));
+      painting.setAttribute('aria-label', playing ? 'Pause narration' : 'Play narration');
+    }
+    painting.addEventListener('click', async () => {
+      if (audio.paused) {
+        try { if (audio.ended) audio.currentTime = 0; await audio.play(); }
+        catch (err) { hint.textContent = 'Unable to play audio'; }
+      } else { audio.pause(); }
+    });
+    audio.addEventListener('play', updatePlayback);
+    audio.addEventListener('pause', updatePlayback);
+    audio.addEventListener('ended', updatePlayback);
+  </script>
+</body>
+</html>
